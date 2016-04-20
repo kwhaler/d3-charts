@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>D3Charts</title>
+
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <!-- build:css styles/vendor.css -->
+    <!-- bower:css -->
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="/bower_components/d3/d3.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+    
+  </head>
+  <body>
+    <!--[if lt IE 10]>
+      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    
+    <div class="container">
+      <header>
+        <h1 class="site-heading">D3 Charts</h1>
+        <h4 class="site-subheading">Simple charts anyone can use.</h4>
+      </header>
+      <aside class="navigation-section">
+        <nav>
+          <ol>
+            <li><a href="#">Chart Link</a></li>
+          </ol>
+        </nav>
+      </aside>
+      <section class="charts-section">
+        <h2 class="chart-section-heading">Line Chart</h2>
+        <style>
+          path {
+            stroke: steelblue;
+            stroke-width: 3;
+            fill: none;
+          }
+          .x-label {
+            text-anchor:middle;
+          }
+          .y-label {
+            text-anchor: end;
+          }
+          .x-grids {
+            stroke: lightgray;
+          }
+          .y-grids {
+            stroke: lightgray;
+          }
+          .x-ticks, .x-axis {
+            stroke: black;
+            stroke-width: 2;
+          }
+          .y-ticks, .y-axis {
+            stroke: black;
+            stroke-width: 2;
+          }
+
+          text {
+            font-family: Verdana;
+            font-size: 9pt;
+          }
+        </style>
+        <div id="line-chart"></div>
+        <script>
+        var lineChart = (function(){
+          
+          var data = [ 100, 110, 140, 130, 80, 75, 120, 130, 100];
+ 
+          w = 400; 
+          h = 300;
+          margin_x = 32;
+          margin_y = 20;
+
+          var scale = d3.scale.linear()
+            .domain([0,5])
+            .range([0,255]);
+
+            y = d3.scale.linear()
+              .domain([0, d3.max(data)])
+              .range([0 + margin_y, h - margin_y]);
+
+            x = d3.scale.linear()
+              .domain([0, data.length])
+              .range([0 + margin_x, w - margin_x]);
+
+          var svg = d3.select('#line-chart')
+            .append('svg:svg')
+            .attr('width', w)
+            .attr('height', h);
+
+          var g = svg.append('svg:g')
+            .attr('transform', 'translate(0,' + h + ')');
+
+          var line = d3.svg.line()
+            .x(function(d,i) { return x(i); })
+            .y(function(d) { return -y(d); });
+          
+          // draw y axis
+          g.append('svg:line')
+            .attr('class', 'y-axis')
+            .attr('x1', x(0))
+            .attr('y1', -y(0))
+            .attr('x2', x(w))
+            .attr('y2', -y(0));
+
+          // draw x axis
+          g.append('svg:line')
+            .attr('class', 'x-axis')
+            .attr('x1', x(0))
+            .attr('y1', -y(0))
+            .attr('x2', x(0))
+            .attr('y2', -y(d3.max(data))-10);
+
+          // draw x labels
+          g.selectAll('.x-label')
+            .data(x.ticks(5))
+            .enter().append('svg:text')
+            .attr('class', 'x-label')
+            .text(String)
+            .attr('x', function(d) { return x(d) })
+            .attr('y', 0)
+            .attr('text-anchor', 'middle');
+
+          // draw y labels
+          g.selectAll('.y-label')
+            .data(y.ticks(5))
+            .enter().append('svg:text')
+            .attr('class', 'y-label')
+            .text(String)
+            .attr('x', 25)
+            .attr('y', function(d) { return -y(d) })
+            .attr('text-anchor', 'end');
+
+          // draw x ticks
+          g.selectAll('.x-ticks')
+            .data(x.ticks(5))
+            .enter().append('svg:line')
+            .attr('class', 'x-ticks')
+            .attr('x1', function(d) { return x(d); })
+            .attr('y1', -y(0))
+            .attr('x2', function(d) { return x(d); })
+            .attr('y2', -y(0)-5);
+
+          // draw y ticks
+          g.selectAll('.y-ticks')
+            .data(y.ticks(5))
+            .enter().append('svg:line')
+            .attr('class', 'y-ticks')
+            .attr('y1', function(d) { return -1 * y(d); })
+            .attr('x1', x(0)+5)
+            .attr('y2', function(d) { return -1 * y(d); })
+            .attr('x2', x(0));
+
+          // draw x grid
+          g.selectAll('x-grids')
+            .data(x.ticks(5))
+            .enter().append('svg:line')
+            .attr('class', 'x-grids')
+            .attr('x1', function(d){ return x(d); })
+            .attr('y1', -y(0))
+            .attr('x2', function(d) { return x(d); })
+            .attr('y2', -y(d3.max(data))-10);
+
+          g.selectAll('y-grids')
+            .data(y.ticks(5))
+            .enter().append('svg:line')
+            .attr('class', 'y-grids')
+            .attr('y1', function(d) { return -y(d); })
+            .attr('x1', x(w))
+            .attr('y2', function(d) { return -y(d); })
+            .attr('x2', x(0));
+
+          g.append('svg:path').attr('d', line(data));
+
+        })();
+        </script>
+      </section>
+    </div>
+    
+    <!-- build:js scripts/main.js -->
+    <script src="scripts/main.js"></script>
+    <!-- endbuild -->
+  </body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "d3charts",
+  "private": true,
+  "dependencies": {
+    "d3": "^3.5.16"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
+  }
+}
